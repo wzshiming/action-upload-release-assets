@@ -1,0 +1,14 @@
+name: 'Upload Release Assets'
+description: 'Create a release, upload release assets'
+author: 'wzshiming'
+inputs:
+  GH_TOKEN:
+    description: 'Github TOKEN'
+    default: ${{ github.token }}
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - run: ${{ github.action_path }}/upload-release-assets.sh
+      shell: bash
