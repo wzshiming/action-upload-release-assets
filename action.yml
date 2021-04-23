@@ -1,14 +1,10 @@
-name: 'Upload Release Assets'
-description: 'Create a release, upload release assets'
-author: 'wzshiming'
-inputs:
-  GH_TOKEN:
-    description: 'Github TOKEN'
-    default: ${{ github.token }}
-    required: false
+name: "Upload Release Assets"
+description: "Create a release, upload release assets"
+author: "wzshiming"
 
 runs:
   using: "composite"
   steps:
-    - run: ${{ github.action_path }}/upload-release-assets.sh
+    - run: ../../_actions/wzshiming/action-upload-release-assets/v1/upload-release-assets.sh
+      #  ${{ github.action_path }} does not work properly with Bash in Windows
       shell: bash

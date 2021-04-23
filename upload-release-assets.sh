@@ -19,10 +19,12 @@ function upload() {
     fi
 
     if [[ -z "${GOOS}" ]]; then
-      if [ "$(uname)" = "Darwin" ]; then
+      if [[ "$(uname)" == "Darwin" ]]; then
         GOOS="darwin"
-      elif [ "$(uname -s)" == "Linux" ]; then
+      elif [[ "$(uname -s)" == "Linux" ]]; then
         GOOS="linux"
+      elif [[ "$(uname)" =~ "MINGW" ]]; then
+        GOOS="windows"
       else
         echo "This system, $(uname), isn't supported"
         exit 1
@@ -51,25 +53,28 @@ function upload() {
       esac
     fi
 
-    NAME="putingh_${GOOS}_${GOARCH}"
+    BIN="putingh"
+    NAME="${BIN}_${GOOS}_${GOARCH}"
     if [[ "${GOOS}" == "windows" ]]; then
       NAME="${NAME}.exe"
+      BIN="${BIN}.exe"
     fi
 
     TARGET="https://github.com/wzshiming/putingh/releases/download/${TAG}/${NAME}"
 
-    echo "${TARGET}" -c -O putingh
     if command_exists wget; then
-      wget "${TARGET}" -c -O putingh
+      echo "wget ${TARGET}" -c -O "$BIN"
+      wget "${TARGET}" -c -O "$BIN"
     elif command_exists curl; then
-      curl "${TARGET}" -o putingh
+      echo "curl ${TARGET}" -L -o "$BIN"
+      curl "${TARGET}" -L -o "$BIN"
     else
       echo "No download tool available"
       exit 1
     fi
 
     chmod +x putingh
-    ./putingh $@
+    "./$BIN" $@
   fi
 }
 
@@ -82,8 +87,7 @@ if [[ -z "${SOURCE_PREFIX}" ]]; then
   SOURCE_PREFIX="asset://${REPO}/$(git describe --tags)"
 fi
 
-for FILE in $(ls "${RELEASE}" | xargs)
-do
+for FILE in $(ls "${RELEASE}" | xargs); do
   echo "Put ${RELEASE}/$FILE in ${SOURCE_PREFIX}/${FILE}"
   upload "${SOURCE_PREFIX}/${FILE}" "${RELEASE}/$FILE" || true
 done
