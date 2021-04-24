@@ -15,11 +15,12 @@ function hashsum() {
 }
 
 function upload() {
-  if command_exists "./putingh"; then
-    ./putingh $@
+  BIN="putingh"
+  if command_exists "./${BIN}"; then
+    "./${BIN}" $@
     return
-  elif command_exists "putingh"; then
-    putingh $@
+  elif command_exists "${BIN}"; then
+    "${BIN}" $@
     return
   else
     if [[ -z "${TAG}" ]]; then
@@ -61,27 +62,30 @@ function upload() {
       esac
     fi
 
-    BIN="putingh"
     NAME="${BIN}_${GOOS}_${GOARCH}"
     if [[ "${GOOS}" == "windows" ]]; then
       NAME="${NAME}.exe"
-      BIN="${BIN}.exe"
     fi
 
-    TARGET="https://github.com/wzshiming/putingh/releases/download/${TAG}/${NAME}"
+    TARGET="https://github.com/wzshiming/${BIN}/releases/download/${TAG}/${NAME}"
+
+    EXEC="${BIN}"
+    if [[ "${GOOS}" == "windows" ]]; then
+      EXEC="${EXEC}.exe"
+    fi
 
     if command_exists wget; then
-      echo "wget ${TARGET}" -c -O "$BIN"
-      wget "${TARGET}" -c -O "$BIN"
+      echo "wget ${TARGET}" -c -O "$EXEC"
+      wget "${TARGET}" -c -O "$EXEC"
     elif command_exists curl; then
-      echo "curl ${TARGET}" -L -o "$BIN"
-      curl "${TARGET}" -L -o "$BIN"
+      echo "curl ${TARGET}" -L -o "$EXEC"
+      curl "${TARGET}" -L -o "$EXEC"
     else
       echo "No download tool available"
       exit 1
     fi
 
-    chmod +x putingh
+    chmod +x "./$BIN"
     "./$BIN" $@
   fi
 }
