@@ -1,5 +1,5 @@
-name: "Upload Release Assets"
-description: "Create a release, upload release assets"
+name: "Upload Release Assets (Linux, Darwin, Windows)"
+description: "Create a release, upload release assets, multi-platform support(Linux, Darwin, Windows)"
 author: "wzshiming"
 
 runs:
