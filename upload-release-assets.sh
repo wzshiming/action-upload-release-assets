@@ -6,6 +6,14 @@ function command_exists() {
   type "${COMMAND}" >/dev/null 2>&1
 }
 
+function hashsum() {
+  if command_exists "sha256sum"; then
+    sha256sum $@
+  elif command_exists "shasum"; then
+    shasum -a 256 $@
+  fi
+}
+
 function upload() {
   if command_exists "./putingh"; then
     ./putingh $@
@@ -83,11 +91,14 @@ if [[ -z "${RELEASE}" ]]; then
 fi
 
 if [[ -z "${SOURCE_PREFIX}" ]]; then
-  REPO="$(git remote get-url --push origin | sed -e 's#https://github.com/##' | sed -e 's#git@github.com:##')"
+  REPO="$(git remote get-url --push origin | sed -e 's#^https://github.com/##' | sed -e 's#^git@github.com:##')"
   SOURCE_PREFIX="asset://${REPO}/$(git describe --tags)"
 fi
 
 for FILE in $(ls "${RELEASE}" | xargs); do
-  echo "Put ${RELEASE}/$FILE in ${SOURCE_PREFIX}/${FILE}"
-  upload "${SOURCE_PREFIX}/${FILE}" "${RELEASE}/$FILE" || true
+  echo "Put ${RELEASE}/${FILE} in ${SOURCE_PREFIX}/${FILE}"
+  upload "${SOURCE_PREFIX}/${FILE}" "${RELEASE}/${FILE}" || true
+  hashsum "${RELEASE}/${FILE}" >"${RELEASE}/${FILE}".sha256 || true
+  upload "${SOURCE_PREFIX}/${FILE}.sha256" "${RELEASE}/${FILE}.sha256" || true
+  rm "${RELEASE}/${FILE}.sha256" || true
 done
