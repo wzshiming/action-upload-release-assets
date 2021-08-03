@@ -75,18 +75,18 @@ function upload() {
     fi
 
     if command_exists wget; then
-      echo "wget ${TARGET}" -c -O "$EXEC"
-      wget "${TARGET}" -c -O "$EXEC"
+      echo "wget ${TARGET}" -c -O "${EXEC}"
+      wget "${TARGET}" -c -O "${EXEC}"
     elif command_exists curl; then
-      echo "curl ${TARGET}" -L -o "$EXEC"
-      curl "${TARGET}" -L -o "$EXEC"
+      echo "curl ${TARGET}" -L -o "${EXEC}"
+      curl "${TARGET}" -L -o "${EXEC}"
     else
       echo "No download tool available"
       exit 1
     fi
 
-    chmod +x "./$BIN"
-    "./$BIN" $@
+    chmod +x "./${BIN}"
+    "./${BIN}" $@
   fi
 }
 
