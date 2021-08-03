@@ -24,7 +24,7 @@ function upload() {
     return
   else
     if [[ -z "${TAG}" ]]; then
-      TAG="v0.5.1"
+      TAG="v0.6.0"
     fi
 
     if [[ -z "${GOOS}" ]]; then
